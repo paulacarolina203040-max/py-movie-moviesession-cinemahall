@@ -1,10 +1,10 @@
-from datetime import date
-from django.db.models import QuerySet
 from db.models import MovieSession
+from datetime import datetime
+from django.db.models import QuerySet
 
 
 def create_movie_session(
-    movie_id: int, cinema_hall_id: int, movie_show_time: str
+    movie_show_time: str, movie_id: int, cinema_hall_id: int
 ) -> MovieSession:
     return MovieSession.objects.create(
         movie_id=movie_id,
@@ -14,12 +14,14 @@ def create_movie_session(
 
 
 def get_movies_sessions(
-    session_date: date = None
+    session_date: str | None = None,
 ) -> QuerySet[MovieSession]:
     sessions = MovieSession.objects.all()
     if session_date:
+        dt_obj = datetime.strptime(session_date, "%Y-%m-%d")
+        parsed_date = dt_obj.date()
         sessions = sessions.filter(
-            show_time__date=session_date
+            show_time__date=parsed_date
         )
     return sessions
 
